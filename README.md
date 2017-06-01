@@ -3,7 +3,7 @@
 ## Install QEMU
 
 Download the QEMU source:
-```sh
+```
 git clone git://git.qemu-project.org/qemu.git
 ```
 
