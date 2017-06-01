@@ -60,3 +60,13 @@ This will boot Petalinux on the _zc702_ you can either login directly in the QEM
 ```
 ssh localhost -p 10022 -l root
 ```
+
+## Filesharing
+
+To easily share files between host and guest you can mount a directory of the host via ssh (requires `sshfs`) by excuting the following commands:
+```
+ssh -p 10022 localhost -l root "mkdir /media/sshfs"
+sshfs -o port=10022,nonempty root@localhost:/media/sshfs <PATH_TO_MOUNT_DIR> 
+```
+
+This will create the `/media/sshfs` directory on the guest which contains all files from `<PATH_TO_MOUNT_DIR>`.
