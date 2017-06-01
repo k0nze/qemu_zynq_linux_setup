@@ -1,3 +1,7 @@
+<!--
+Author: Konstantin Lübeck (University of Tübingen, Chair for Embedded Systems)
+-->
+
 # QEMU Zynq Petalinux setup on Linux Hosts
 
 ## Install QEMU
@@ -52,21 +56,46 @@ To boot Petalinux with QEMU execute the following command:
     -kernel <PATH_TO_PETALINUX>/zc702/uImage \
     -dtb <PATH_TO_PETALINUX>/zc702/devicetree.dtb \
     --initrd <PATH_TO_PETALINUX>/zc702/uramdisk.image.gz \
-    -net nic -net user,hostfwd=tcp:127.0.0.1:10022-10.0.2.15:22
+    -net nic -net user,hostfwd=tcp:127.0.0.1:10022-10.0.2.15:22,tftp=<PATH_TO_HOST_DIR>
 ``` 
 
 This will boot Petalinux on the _zc702_ you can either login directly in the QEMU terminal as user `root` or you can login via ssh with the following command:
 
 ```
-ssh localhost -p 10022 -l root
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 10022 root@localhost
 ```
+
+Since the Petalinux guest generates a new SSH key each time it boots the options `-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no` are used which disable the key check.
+
+You can terminate qemu by pressing [CTRL+A] [X] in the qemu terminal.
 
 ## Filesharing
 
-To easily share files between host and guest you can mount a directory of the host via ssh (requires `sshfs`) by excuting the following commands:
+Petalinux was booted with the `-net` option `tftp=<PATH_TO_HOST_DIR>` which started a ftp server on the host with the root directory `<PATH_TO_HOST_DIR>`. 
+
+You can retrieve files from this directory on the guest with the following command:
 ```
-ssh -p 10022 localhost -l root "mkdir /media/sshfs"
-sshfs -o port=10022,nonempty root@localhost:/media/sshfs <PATH_TO_MOUNT_DIR> 
+tftp -r <HOST_FILE> -g 10.0.2.2
 ```
 
-This will create the `/media/sshfs` directory on the guest which contains all files from `<PATH_TO_MOUNT_DIR>`.
+unfortunately the server is read only.
+
+## Compile for Petalinux
+
+You can find a Hello World C program in [src](./src) and a Makefile to compile it for Petalinux. Compile it with:
+```
+make
+```
+
+Copy the binary to your directory for `tftp`:
+```
+cp helloworld <PATH_TO_HOST_DIR>
+```
+
+On the guest system execute the following commands to run the Hello World program:
+```
+tftp -r helloworld -g 10.0.2.2
+chmod +x helloworld
+./helloworld
+```
+
