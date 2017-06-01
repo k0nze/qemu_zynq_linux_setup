@@ -32,4 +32,31 @@ Extract the archive:
 tar xf 2016.4-zc702-release.tar.xz
 ``` 
 
+You will find the following files in the extracted directory `zc702`:
+```
+BOOT.bin
+devicetree.dtb
+fsbl-zc702-zynq7.elf
+u-boot.elf
+uImage
+uramdisk.image.gz
+```
 
+To boot Petalinux with QEMU execute the following command:
+``` 
+<PATH_TO_QEMU_GIT_REPO>/aarch64-softmmu/qemu-system-aarch64 \ 
+    -M xilinx-zynq-a9 \
+    -serial /dev/null \
+    -serial mon:stdio \
+    -display none \
+    -kernel <PATH_TO_PETALINUX>/zc702/uImage \
+    -dtb <PATH_TO_PETALINUX>/zc702/devicetree.dtb \
+    --initrd <PATH_TO_PETALINUX>/zc702/uramdisk.image.gz \
+    -net nic -net user,hostfwd=tcp:127.0.0.1:10022-10.0.2.15:22
+``` 
+
+This will boot Petalinux on the _zc702_ you can either login directly in the QEMU terminal as user `root` or you can login via ssh with the following command:
+
+```
+ssh localhost -p 10022 -l root
+```
