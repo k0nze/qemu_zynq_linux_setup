@@ -13,6 +13,7 @@ git clone git://git.qemu-project.org/qemu.git
 
 Get the `pixman` and `dtc` submodules:
 ```
+cd qemu
 git submodule update --init pixman dtc
 ```
 
@@ -78,11 +79,21 @@ You can retrieve files from this directory on the guest with the following comma
 tftp -r <HOST_FILE> -g 10.0.2.2
 ```
 
-unfortunately the server is read only.
+Unfortunately the server is read only.
 
 ## Compile for Petalinux
 
-You can find a Hello World C program in [src](./src) and a Makefile to compile it for Petalinux. Compile it with:
+To compile a C program on your host you need the `arm-linux-gnueabihf-gcc` compiler either you have a recent version of Xilinx Vivado SDx which provides this compiler or you have to install it manually for your host:
+
+ * Ubuntu
+    ```
+    sudo apt-get install gcc-4.8-arm-linux-gnueabihf
+    ```
+
+ * CentOS
+    TODO
+
+You can find a [Hello World C program](./src/helloworld.c) in [src](./src) and a [Makefile](./src/Makefile) to compile it for Petalinux. Compile it with:
 ```
 make
 ```
